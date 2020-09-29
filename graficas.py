@@ -1,4 +1,4 @@
-mport matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import sys
 archivo=open(sys.argv[1],"r");
