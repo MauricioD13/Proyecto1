@@ -29,8 +29,10 @@ def process():
             i+=1
         else:
             break
-    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),selection_entry.get(),name_entry.get(),x_entry.get(),y_entry.get())
+    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),selection_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get())
     
+def delete():
+    tree.delete(deleter_entry.get()) 
 
 #Objects
 tree=ttk.Treeview(window0,columns=("File"))
@@ -53,8 +55,14 @@ x_entry=Entry(window0)
 y_label=Label(window0,text="Titulo eje Y")
 y_entry=Entry(window0)
 
+samples_label=Label(window0,text="Cantidad muestras")
+samples_entry=Entry(window0)
+
+deleter_entry=Entry(window0)
+
 Button(text="Abrir archivo",command=openfile).place(x=10,y=420)
 Button(text="Procesar",command=process).place(x=150,y=420)
+Button(text="Borrar",command=delete).place(x=150,y=500)
 
 
 tree.heading('#0',text="ID")
@@ -68,6 +76,10 @@ selection_entry.place(x=300,y=420)
 
 name_label.place(x=450,y=400)
 name_entry.place(x=450,y=420)
+
+samples_label.place(x=450, y=500)
+samples_entry.place(x=450, y=520)
+
 separator_label.place(x=10,y=300)
 separator_entry.place(x=10,y=320)
 
@@ -79,6 +91,8 @@ x_entry.place(x=300,y=320)
 
 y_label.place(x=400,y=300)
 y_entry.place(x=400,y=320)
+
+deleter_entry.place(x=50,y=500)
 
 tree.grid(row=1, columnspan=3, sticky='nsew')
 

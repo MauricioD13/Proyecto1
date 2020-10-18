@@ -7,201 +7,96 @@ import mplcursors
 
 
 
-def graphics(nombres_archivo,separator,number_separator,organization,name,x_label,y_label):
+def graphics(nombres_archivo,separator,number_separator,organization,name,x_label,y_label,samples):
 
         files=[]
         legend_names=[]
         temp=[]
+        colors=["g","r","b","c","m","k"]
         for i in range(len(nombres_archivo)):
                 temp=nombres_archivo[i].split("/")
-                legend_names.append(temp[len(temp)-1])
-        
-        print(legend_names)
+                temp=temp[len(temp)-1].split(".")
+                legend_names.append(temp[0])
         for i in range(len(nombres_archivo)):
             archivo=open(nombres_archivo[i],"r")
             files.append(archivo)
-        if(len(files)<=3):
-                
-                i=0
-                time_array=[]
-                voltage_array=[]
-                if(number_separator==","):
-                        lenghts=[]
-                        for i in range(len(files)):
+        x_array=[]
+        y_array=[]
+        for file in files:
+                guardar(file,x_array,y_array,number_separator,separator)
+        organization_output=[]
+        columns=[]
+        per_graph=[]
+        columns, per_graph=graphics_organization(organization,per_graph,columns)
+        lengths=[]
+        for i in x_array:
+                lengths.append(len(i))
+        min_samples=min(lengths)
+        if(int(samples)<min_samples):
+                min_samples=int(samples)
+        
+        if(len(columns)==1):
+                fig, ax=plt.subplots()   
+                for i in range(per_graph[0]):
+                        ax.plot(x_array[i][0:min_samples],y_array[i][0:min_samples],colors[i],label=legend_names[i])  # Plot some data on the axes.
+                        ax.grid(True)
+                        ax.set_ylabel(y_label,fontsize=16)
+                        ax.set_xlabel(x_label,fontsize=16)
+                        ax.set_title(name,fontsize=16)
+                plt.legend(loc='upper right')
+                mplcursors.cursor(multiple=True).connect("add", lambda sel: sel.annotation.draggable(False))
+                plt.show() 
+        else:      
+                fig, ax=plt.subplots(1,len(columns))  
+                k=0
+                for j in range(0,len(columns)):
+                        for i in range(per_graph[j]):
                                 
-                                if(separator==","):
-                                        labels=[]
-                                        labels=files[i].readline().split(separator)
-                                        temp_time=[]
-                                        temp_voltage=[]
-                                        for line in files[i]:
-                                                linea=line.split(separator)
-                                                temp_time.append(float(linea[0]+"."+linea[1]))
-                                                temp_voltage.append(float(linea[2]+"."+linea[3]))
-                                                i+=1
-                                                if(i>=20000):
-                                                        break 
-                                        lenghts.append(len(temp_time))
-                                        time_array.append(np.array(temp_time))
-                                        voltage_array.append(np.array(temp_voltage))
-                                else:
-                                        labels=[]
-                                        labels=files[i].readline().split(separator)
-                                        temp_time=[]
-                                        print(separator)
-                                        if(separator=="tab"):
-                                                separator="\t"
-                                        temp_voltage=[]
-                                        for line in files[i]:
-                                                linea=line.split(str(separator))
-                                                temp=linea[0].split(number_separator)
-                                                temp_time.append(float(temp[0]+"."+temp[1]))
-                                                temp=linea[1].split(number_separator)
-                                                temp_voltage.append(float(temp[0]+"."+temp[1]))
-                                                i+=1
-                                                if(i>=20000):
-                                                        break
-                                        lenghts.append(len(temp_time)) 
-                                        time_array.append(np.array(temp_time))
-                                        voltage_array.append(np.array(temp_voltage))
-
-                        graphic_quantity=organization.split(";")
-                        graphics_inside=graphic_quantity[0].split(",")
-                        print(lenghts)
-                        if(len(graphic_quantity)>1):
-                                fig, ax=plt.subplots(1,len(graphic_quantity))
-                                for i in range(len(graphic_quantity)):
-                                        for j in range(len(graphics_inside)):  
-                                                ax[i].plot(time_array[j][0:min(lenghts)],voltage_array[j][min(lenghts)],label=name)  # Plot some data on the axes.
-                                                ax[i].grid(True)
-                                                ax[i].set_ylabel(y_label)
-                                                ax[i].set_xlabel(x_label)
-                                                ax[i].set_title(name)   
-                        else:
-                                fig, ax=plt.subplots()
-                                for j in range(len(graphics_inside)):  
-                                                ax.plot(time_array[j][0:min(lenghts)],voltage_array[j][0:min(lenghts)],label=legend_names[j])  # Plot some data on the axes.
-                                                ax.grid(True)
-                                                ax.set_ylabel(y_label)
-                                                ax.set_xlabel(x_label)
-                                                ax.set_title(name) 
-                                                ax.legend(loc="upper right")
-                        fig.subplots_adjust(hspace=0.5)
-                        
-                        
-                         
-                        mplcursors.cursor(multiple=True).connect(
-                        "add", lambda sel: sel.annotation.draggable(False))
-                        
-                        plt.show()
-                if(number_separator=="."):
-                        
-                        for i in range(len(files)):
-                                labels=[]
-                                labels=files[i].readline().split(separator)
-                                temp_time=[]
-                                temp_voltage=[]
-                                for line in archivo:
-                                        linea=line.split(separator)
-                                        temp=linea.split(number_separator)
-                                        temp_time.append(float(temp[0]+"."+temp[1]))
-                                        temp_voltage.append(float(temp[0]+"."+temp[1]))
-                                        i+=1
-                                        if(i>=20000):
-                                                break
-                                time_array.append(np.array(temp_time))
-                                voltage_array.append(np.array(temp_voltage))
-                        graphic_quantity=organization.split(";")
-                        columns=graphic_quantity[0].split(",")
-                        
-                        if(len(graphic_quantity)>1):
-                                fig, ax=plt.subplots(1,len(graphic_quantity))
-                                for i in range(len(graphic_quantity)):
-                                        for j in range(len(columns)):  
-                                                ax[i].plot(time_array[j],voltage_array[j],label=name)  # Plot some data on the axes.
-                                                ax[i].grid(True)
-                                                ax[i].set_ylabel(y_label)
-                                                ax[i].set_xlabel(x_label)
-                                                ax[i].set_title(name)   
-                        else:
-                                fig, ax=plt.subplots()
-                                for j in range(len(columns)):  
-                                                ax.plot(time_array[j],voltage_array[j],label=name)  # Plot some data on the axes.
-                                                ax.grid(True)
-                                                ax.set_ylabel(y_label)
-                                                ax.set_xlabel(x_label)
-                                                ax.set_title(name)
-                        plt.show()
-        if(len(files)>3):
-                        #labels[1]=labels[1].replace("\n","")
-                i=0
-                time_array=[]
-                voltage_array=[]
-                if(number_separator==","):
-                        for i in range(len(files)):
-                                labels=[]
-                                labels=files[i].readline().split(separator)
-                                temp_time=[]
-                                temp_voltage=[]
-                                for line in files[i]:
-                                        linea=line.split(separator)
-                                        temp_time.append(float(linea[0]+"."+linea[1]))
-                                        temp_voltage.append(float(linea[2]+"."+linea[3]))
-                                        i+=1
-                                        if(i>=20000):
-                                                break 
-                                time_array.append(np.array(temp_time))
-                                voltage_array.append(np.array(temp_voltage))
-                                
-                        graphic_rows=organization.split(";")
-                        graphic_columns=graphic_rows[0].split(",")
-                        
-                        
-                        fig, ax=plt.subplots(len(graphic_rows),len(graphic_columns))
-                        
-                        for j in range(len(graphic_rows)):
-                                for i in range(len(graphic_columns)):
-                                        ax[j][i].plot(time_array[i],voltage_array[i],label=name)  # Plot some data on the axes.
-                                        ax[j][i].grid(True)
-                                        ax[j][i].set_ylabel(y_label)
-                                        ax[j][i].set_xlabel(x_label)
-                                        ax[j][i].set_title(name)    
-                        mplcursors.cursor(multiple=True).connect("add", lambda sel: sel.annotation.draggable(False))
-    
-                        plt.show()
-                if(number_separator=="."):
-                        
-                        for i in range(len(files)):
-                                labels=[]
-                                labels=files[i].readline().split(separator)
-                                temp_time=[]
-                                temp_voltage=[]
-                                for line in archivo:
-                                        linea=line.split(separator)
-                                        temp=linea.split(number_separator)
-                                        temp_time.append(float(temp[0]+"."+temp[1]))
-                                        temp_voltage.append(float(temp[0]+"."+temp[1]))
-                                        i+=1
-                                        if(i>=20000):
-                                                break
-                                time_array.append(np.array(temp_time))
-                                voltage_array.append(np.array(temp_voltage))
-                        rows=[]
-                        rows=organization.split(";")
-                        print(rows)
-                        fig, ax=plt.subplots(len(files)/2,len(files)/2)
-                        
-                        for j in range(len(files)/2):
-                                for i in range(len(files)/2):
-                                        ax[j][i].plot(time_array[i],voltage_array[i],label=name)  # Plot some data on the axes.
-                                        ax[j][i].grid(True)
-                                        ax[j][i].set_ylabel(y_label)
-                                        ax[j][i].set_xlabel(x_label)
-                                        ax[j][i].set_title(name)    
-                        mplcursors.cursor(multiple=True).connect("add", lambda sel: sel.annotation.draggable(False))
-    
-                        plt.show()
+                                ax[j].plot(x_array[k][0:100],y_array[k][0:min_samples],colors[i],label=legend_names[i])  # Plot some data on the axes.
+                                ax[j].grid(True)
+                                ax[j].set_ylabel(y_label,fontsize=16)
+                                ax[j].set_xlabel(x_label,fontsize=16)
+                                ax[j].set_title(name,fontsize=16)
+                                k+=1
+                plt.legend(loc='upper right')    
+                mplcursors.cursor(multiple=True).connect("add", lambda sel: sel.annotation.draggable(False))
+                plt.show()
+        
         
                 
-                
+def guardar(archivo,x_array,y_array,number_separator,separator):
+        labels=[]
+        temp_x=[]
+        temp_y=[]
+        if(separator=="tab"):
+                separator="\t"
+        labels=archivo.readline().split(separator)
+        #labels[1]=labels[1].replace("\n","")
+        if(number_separator==","):
+                for line in archivo:
+                        linea=line.split(separator)
+                        temp=linea[0].split(",")
+                        temp_x.append(float(temp[0]+"."+temp[1]))
+                        temp=linea[1].split(",")
+                        temp_y.append(float(temp[0]+"."+temp[1]))
+                x_array.append(np.array(temp_x))
+                y_array.append(np.array(temp_y))      
+        if(number_separator=="."):
+                for line in archivo:
+                        linea=line.split(separator)
+                        temp_x.append(float(linea[0]))
+                        temp_y.append(float(linea[1]))
+                x_array.append(np.array(temp_x))
+                y_array.append(np.arrya(temp_y))
+                        
+                          
 
+def graphics_organization(organization,per_graph,columns):
+        columns=organization.split(";")
+        x=[]
+        for i in columns:
+                x=i.split(",")
+                per_graph.append(len(x))
+        return columns, per_graph
+        
+        
