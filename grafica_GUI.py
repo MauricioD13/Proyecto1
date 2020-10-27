@@ -29,7 +29,7 @@ def process():
             i+=1
         else:
             break
-    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),selection_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get())
+    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),organization_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get())
     
 def delete():
     tree.delete(deleter_entry.get()) 
@@ -43,8 +43,8 @@ separator_entry=Entry(window0,width=10)
 number_separator_label=Label(window0,text="Separador de numero")
 number_separator_entry=Entry(window0,width=10)
 
-selection_label=Label(window0,text="Organizacion")
-selection_entry=Entry(window0)
+organization_label=Label(window0,text="Organizacion")
+organization_entry=Entry(window0)
 
 name_label=Label(window0,text="Nombre de la grafica")
 name_entry=Entry(window0)
@@ -71,8 +71,12 @@ tree.column('#0', stretch=NO)
 tree.column('#1', stretch=NO,width=400)
 
 
-selection_label.place(x=300,y=400)
-selection_entry.place(x=300,y=420)
+organization_label.place(x=300,y=400)
+organization_entry.place(x=300,y=420)
+"""La entrada de organizacion especifíca cual va a ser al disposicion de las graficas, esto se logra
+    escribiendo "," para las graficas que van a estar en una misma figura y ";" para separar las graficas
+    por columnas. Ejemplo: 1,2,3;4,5,6 -> para este caso las primeras tres graficas estarán en una misma figura
+    y las siguientes tres en otra figura"""
 
 name_label.place(x=450,y=400)
 name_entry.place(x=450,y=420)

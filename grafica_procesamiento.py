@@ -76,7 +76,11 @@ def guardar(archivo,x_array,y_array,number_separator,separator):
                 for line in archivo:
                         linea=line.split(separator)
                         temp=linea[0].split(",")
-                        temp_x.append(float(temp[0]+"."+temp[1]))
+                        print(temp)
+                        try:
+                                temp_x.append(float(temp[0]+"."+temp[1]))
+                        except:
+                                continue
                         temp=linea[1].split(",")
                         temp_y.append(float(temp[0]+"."+temp[1]))
                 x_array.append(np.array(temp_x))
