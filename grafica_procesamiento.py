@@ -7,11 +7,12 @@ import mplcursors
 
 
 
-def graphics(nombres_archivo,separator,number_separator,organization,name,x_label,y_label,samples):
+def graphics(nombres_archivo,separator,number_separator,organization,name,x_label,y_label,samples,axis):
 
         files=[]
         legend_names=[]
         temp=[]
+        print(axis)
         colors=["g","r","b","c","m","k"]
         for i in range(len(nombres_archivo)):
                 temp=nombres_archivo[i].split("/")
@@ -24,7 +25,6 @@ def graphics(nombres_archivo,separator,number_separator,organization,name,x_labe
         y_array=[]
         for file in files:
                 guardar(file,x_array,y_array,number_separator,separator)
-        organization_output=[]
         columns=[]
         per_graph=[]
         columns, per_graph=graphics_organization(organization,per_graph,columns)
@@ -43,6 +43,10 @@ def graphics(nombres_archivo,separator,number_separator,organization,name,x_labe
                         ax.set_ylabel(y_label,fontsize=16)
                         ax.set_xlabel(x_label,fontsize=16)
                         ax.set_title(name,fontsize=16)
+                        if(axis=="logaritmico"):
+                                ax.semilogx()
+                        #ax.set(ylim=(0,1000))
+                        
                 plt.legend(loc='upper right')
                 mplcursors.cursor(multiple=True).connect("add", lambda sel: sel.annotation.draggable(False))
                 plt.show() 
@@ -57,6 +61,9 @@ def graphics(nombres_archivo,separator,number_separator,organization,name,x_labe
                                 ax[j].set_ylabel(y_label,fontsize=16)
                                 ax[j].set_xlabel(x_label,fontsize=16)
                                 ax[j].set_title(name,fontsize=16)
+                                if(axis=="logaritmico"):
+                                         ax[j].semilogx()
+
                                 k+=1
                 plt.legend(loc='upper right')    
                 mplcursors.cursor(multiple=True).connect("add", lambda sel: sel.annotation.draggable(False))
@@ -76,9 +83,12 @@ def guardar(archivo,x_array,y_array,number_separator,separator):
                 for line in archivo:
                         linea=line.split(separator)
                         temp=linea[0].split(",")
-                        temp_x.append(float(temp[0]+"."+temp[1]))
-                        temp=linea[1].split(",")
-                        temp_y.append(float(temp[0]+"."+temp[1]))
+                        try:
+                                temp_x.append(float(temp[0]+"."+temp[1]))
+                                temp=linea[1].split(",")
+                                temp_y.append(float(temp[0]+"."+temp[1]))
+                        except: 
+                                continue
                 x_array.append(np.array(temp_x))
                 y_array.append(np.array(temp_y))      
         if(number_separator=="."):
@@ -87,7 +97,7 @@ def guardar(archivo,x_array,y_array,number_separator,separator):
                         temp_x.append(float(linea[0]))
                         temp_y.append(float(linea[1]))
                 x_array.append(np.array(temp_x))
-                y_array.append(np.arrya(temp_y))
+                y_array.append(np.array(temp_y))
                         
                           
 
@@ -98,5 +108,5 @@ def graphics_organization(organization,per_graph,columns):
                 x=i.split(",")
                 per_graph.append(len(x))
         return columns, per_graph
-        
+           
         
