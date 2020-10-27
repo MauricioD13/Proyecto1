@@ -12,7 +12,7 @@ window0.geometry("700x600")
 def openfile():
     number=0
     cwd=os.getcwd()
-    file_name=filedialog.askopenfilename(initialdir=cwd,title="Seleccione archivo",filetypes= (("archivo de texto","*.txt"),("CSV","*.csv")))
+    file_name=filedialog.askopenfilename(initialdir=cwd,title="Seleccione archivo",filetypes= (("archivo de texto","*.txt"),("CSV","*.csv"),("Todos los archivos","*.*")))
     while(True):
         try:
             tree.insert('','end',iid=number,text=str(number),value=(file_name,"0"))
@@ -29,11 +29,13 @@ def process():
             i+=1
         else:
             break
-    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),organization_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get())
-    
+    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),selection_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get(),box.get())
+    print(box.get())
 def delete():
     tree.delete(deleter_entry.get()) 
 
+
+var= IntVar()
 #Objects
 tree=ttk.Treeview(window0,columns=("File"))
 
@@ -55,6 +57,7 @@ x_entry=Entry(window0)
 y_label=Label(window0,text="Titulo eje Y")
 y_entry=Entry(window0)
 
+box=Spinbox(window0,values=("lineal","logaritmico"))
 samples_label=Label(window0,text="Cantidad muestras")
 samples_entry=Entry(window0)
 
@@ -98,6 +101,7 @@ y_entry.place(x=400,y=320)
 
 deleter_entry.place(x=50,y=500)
 
+box.place(x=200, y=500)
 tree.grid(row=1, columnspan=3, sticky='nsew')
 
 
