@@ -12,7 +12,7 @@ def graphics(nombres_archivo,separator,number_separator,organization,name,x_labe
         files=[]
         legend_names=[]
         temp=[]
-        print(axis)
+        
         colors=["g","r","b","c","m","k"]
         for i in range(len(nombres_archivo)):
                 temp=nombres_archivo[i].split("/")

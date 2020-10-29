@@ -29,7 +29,7 @@ def process():
             i+=1
         else:
             break
-    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),selection_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get(),box.get())
+    grafica_procesamiento.graphics(files_name,separator_entry.get(),number_separator_entry.get(),organization_entry.get(),name_entry.get(),x_entry.get(),y_entry.get(),samples_entry.get(),box.get())
     print(box.get())
 def delete():
     tree.delete(deleter_entry.get()) 
@@ -104,16 +104,4 @@ deleter_entry.place(x=50,y=500)
 box.place(x=200, y=500)
 tree.grid(row=1, columnspan=3, sticky='nsew')
 
-
-
-
 window0.mainloop()
-
-
-
-
-
-
-
-
-
