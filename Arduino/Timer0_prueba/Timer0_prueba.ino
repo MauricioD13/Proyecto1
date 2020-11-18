@@ -1,75 +1,48 @@
+  
 // Testing interrupt-based analog reading
 // ATMega328p
 #include "timers.h"
 // Note, many macro values are defined in <avr/io.h> and
 // <avr/interrupts.h>, which are included automatically by
 // the Arduino interface
-
+#include "ADC.h"
 // High when a value is ready to be read
 volatile int readFlag;
 
 // Value to store analog result
 volatile int analogVal;
 
+volatile int port;
 
+
+
+char result[10];
 // Initialization
 void setup(){
   
   pinMode(7,OUTPUT);
   Serial.begin(9600);
-  limit_count(77,1024);
+  limit_count(82,64);// f = 16M/(2*prescaler*(1 + count))
   timer_mode(1);
   timer_interruption('A');
-  
-  ADMUX &= 0xDF; // ADLAR en cero, ajuste a la derecha
+  config_adc();
+  port = 1;
+  port_selection(port);
  
-  ADMUX |= 1 << REFS0; // AVcc para la referencia de voltaje
-
-  ADMUX &= 0xF0;// Limpiar bits para ajustar la entrada
- 
-  ADMUX |= 0; //Puerto A0
-
-  ADCSRA |= (1<<ADEN); // Activar ADC
- 
-  ADCSRA |= (1<<ADATE); // Activar auto-trigger
- 
-  
-  ADCSRB &= 0xF8; // Limpiar bits para la fuente
-
-  ADCSRB |= (0<<ADTS2|1<<ADTS1|1<<ADTS0); // Fuente de inicio Timer/Couter0 compare match A
-
-  
-  ADCSRA |= 0x07; // Prescaler 128, recomendacion ADC por encima de 200k no es confiable
-  //CLKADC = 16MHz/128 = 125Hz
- 
-  // Set ADIE in ADCSRA (0x7A) to enable the ADC interrupt.
-  // Without this, the internal interrupt will not trigger.
-  ADCSRA |= B00001000;
- 
-  // Enable global interrupts
-  // AVR macro included in <avr/interrupts.h>, which the Arduino IDE
-  // supplies by default.
-  sei();
- 
-  // Kick off the first ADC
-  readFlag = 0;
-  // Set ADSC in ADCSRA (0x7A) to start the ADC conversion
-  ADCSRA |= 1<<ADSC;
 }
 
 
 // Processor loop
 void loop(){
 
-  // Check to see if the value has been updated
+ //Mirar si ha habido conversion
   if (readFlag == 1){
    
-    // Perform whatever updating needed
+   //Actualizar bandera
    
     readFlag = 0;
   }
- 
-  // Whatever else you would normally have running in loop().
+  
  
 }
 
@@ -79,10 +52,36 @@ ISR(ADC_vect){
 
   // Done reading
   readFlag = 1;
+
  
   // Must read low first
-  analogVal = ADCL | (ADCH << 8);
-  PORTD |= analogVal <<8; //Salida por el puerto 7
+  analogVal = ADCL;
+  //Cambio de canal 
+  //Debe ser cuando se termine una conversion
+  if(ADMUX == 0x40){
+    ADMUX &= 0xF0; 
+    ADMUX |= 0x01;
+    analogVal=analogVal | (ADCH << 8);
+    Serial.print(analogVal);
+    Serial.print("\t");
+   Serial.flush();
+    
+    
+  }else if (ADMUX == 0x41){
+    ADMUX &= 0xF0; 
+    ADMUX |= 0x00;
+    analogVal=analogVal | (ADCH << 8);
+    Serial.println(analogVal);
+    Serial.flush();
+    
+  }else{
+    int number = ADMUX;
+    Serial.print(number);
+    Serial.println(" Error");
+    Serial.flush();
+  }
+ 
+  //PORTD |= analogVal <<8; //Salida por el puerto 7
   
  
 }
