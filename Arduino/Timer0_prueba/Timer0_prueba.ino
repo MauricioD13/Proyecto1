@@ -66,6 +66,7 @@ ISR(ADC_vect){
     Serial.print("\t");
    Serial.flush();
     
+<<<<<<< HEAD
   }else if (ADMUX == 0x41){
     ADMUX &= 0xF0; 
     ADMUX |= 0x02;
@@ -78,6 +79,14 @@ ISR(ADC_vect){
     ADMUX |= 0x00;
     analogVal=analogVal | (ADCH << 8);
     Serial.println(0);
+=======
+    
+  }else if (ADMUX == 0x41){
+    ADMUX &= 0xF0; 
+    ADMUX |= 0x00;
+    analogVal=analogVal | (ADCH << 8);
+    Serial.println(analogVal);
+>>>>>>> 37065020db80859330c683b1133b4489e485c4c0
     Serial.flush();
     
   }else{
