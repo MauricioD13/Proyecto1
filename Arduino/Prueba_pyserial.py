@@ -1,34 +1,45 @@
-import serial
-import matplotlib.pyplot as plt
 import time
-
-
-arduino = serial.Serial('/dev/ttyACM0', 9600, timeout=0)
-point = 0
-fig, ax = plt.subplots()
+import warnings
+from collections import deque
+import serial
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics
+ 
+N = 200
+data = deque([0] * N, maxlen=N) # deque con longitud máxima N
+#Creamos la figura
 plt.ion()
+fig, ax = plt.subplots()
+ll, = ax.plot(data)
+ 
+# Abrimos la conexión con Arduino
+arduino = serial.Serial('COM5', baudrate=9600, timeout=1)
 
-maxlen = 20
-x = []
-y = []
-
-while True:
-    
-    data = arduino.read(1).decode()
-    print(data)
-    
-    time.sleep(0.01)
-    if data:
-        data = int(data)
-        x.append(point)
-        y.append(data)
-        if len(x) > maxlen:
-            x = x[1:]
-            y = y[1:]
-        plt.plot(x, y, color='r')
-        point += 1
-        plt.pause(0.02)
-
-        ax.clear()
-        #plt.ylim([0, 1023])
-        plt.show()
+ 
+with arduino:
+    while True:
+        try:
+            line = arduino.readline()
+            print(line)
+            if not line:
+            # HACK: Descartamos líneas vacías porque fromstring produce
+            # resultados erróneos, ver
+            # https://github.com/numpy/numpy/issues/1714
+                continue
+            
+            value = int(line.decode().split("\n")[0])
+            yy = np.array(value)
+            
+            print(yy)
+            data.append(yy)
+            ll.set_ydata(data)
+            
+            ax.set_ylim(min(data) - 10, max(data) + 10)
+            arduino.flushInput()
+            plt.pause(0.05)
+        except ValueError:
+            warnings.warn("Line {} didn't parse, skipping".format(line))
+        except KeyboardInterrupt:
+            print("Exiting")
+            break
