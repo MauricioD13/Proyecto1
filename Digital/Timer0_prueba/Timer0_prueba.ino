@@ -26,7 +26,7 @@ void setup(){
   timer_mode(1);
   timer_interruption('A');
   config_adc();
-  port = 1;
+  port = 0;
   port_selection(port);
  
 }
@@ -77,17 +77,9 @@ ISR(ADC_vect){
     ADMUX &= 0xF0; 
     ADMUX |= 0x00;
     analogVal=analogVal | (ADCH << 8);
+    Serial.println(analogVal);
     Serial.println(0);
 
-    
-  }else if (ADMUX == 0x41){
-    ADMUX &= 0xF0; 
-    ADMUX |= 0x00;
-    analogVal=analogVal | (ADCH << 8);
-    Serial.println(analogVal);
-
-    Serial.flush();
-    
   }else{
     int number = ADMUX;
     Serial.print(number);
